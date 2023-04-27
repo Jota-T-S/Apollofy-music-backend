@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const trackSchema = new Schema({
+const TrackSchema = new Schema({
 	songName: {
 		type: String
 	},
@@ -29,5 +29,13 @@ const trackSchema = new Schema({
 		id: { type: String },
 		name: { type: String }
 	},
-	albums: [{}]
-});
+	albums: [{ albumId: String }],
+	likedBy: [{ userId: String }],
+},
+	{
+		timestamps: true
+	});
+
+const TrackModel = model('Track', TrackSchema);
+
+export default TrackModel;
