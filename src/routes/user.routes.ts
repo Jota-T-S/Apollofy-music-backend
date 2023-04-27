@@ -2,15 +2,19 @@ import { Router } from 'express';
 import {
 	registerUser,
 	getAllUser,
-	loginUser
+	loginUser,
+	updateUser,
+	deleteUser
 } from '../controllers/user.controller';
 
 const userRouter = Router();
 
 userRouter
-	.post('/', registerUser)
+	.post('/register', registerUser)
 	.get('/', getAllUser)
-	.get('/login', loginUser);
+	.get('/login', loginUser)
+	.put('/update/:id', updateUser)
+	.delete('/delete/:id', deleteUser);
 
 // userRouter.patch('/update', updateUser);
 
