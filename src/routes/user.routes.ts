@@ -1,12 +1,17 @@
-import { Router } from "express";
-import { registerUser } from "../controllers/user.controller";
-
-
+import { Router } from 'express';
+import {
+	registerUser,
+	getAllUser,
+	loginUser
+} from '../controllers/user.controller';
 
 const userRouter = Router();
 
 userRouter
-   .post('/', registerUser)
+	.post('/', registerUser)
+	.get('/', getAllUser)
+	.get('/login', loginUser);
 
+// userRouter.patch('/update', updateUser);
 
 export default userRouter;
