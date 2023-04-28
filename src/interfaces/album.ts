@@ -1,11 +1,11 @@
 interface LikedByAlbum {
-	userId: string;
+  userId: string;
 }
 export interface Album {
-	title: string;
-	year: number;
-	thumbnail: string;
-	totalTracks: number;
-	userId: string;
-	likedBy: LikedByAlbum[];
+  title: string;
+  year: number;
+  thumbnail: string;
+  totalTracks: number;
+  userId: string;
+  likedBy: LikedByAlbum[];
 }

@@ -1,22 +1,22 @@
 import { Router } from 'express';
 import {
-	registerUser,
-	getAllUsers,
-	loginUser,
-	updateUser,
-	deleteUser,
-	getUser
+  registerUser,
+  getAllUsers,
+  loginUser,
+  updateUser,
+  deleteUser,
+  getUser
 } from '../controllers/user.controller';
 
 const userRouter = Router();
 
 userRouter
-	.post('/register', registerUser)
-	.get('/', getAllUsers)
-	.get('/:id', getUser)
-	.get('/login', loginUser)
-	.put('/update/:id', updateUser)
-	.delete('/delete/:id', deleteUser);
+  .post('/register', registerUser)
+  .get('/', getAllUsers)
+  .get('/:id', getUser)
+  .get('/login', loginUser)
+  .put('/update/:id', updateUser)
+  .delete('/delete/:id', deleteUser);
 
 // userRouter.patch('/update', updateUser);
 

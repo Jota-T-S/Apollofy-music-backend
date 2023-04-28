@@ -1,25 +1,24 @@
 interface GenreTrack {
-    id: string,
-    name: string
+  id: string;
+  name: string;
 }
 
 interface AlbumsTrack {
-    albumId: string
+  albumId: string;
 }
 
 interface LikedByTrack {
-    userId: string
+  userId: string;
 }
 export interface Track {
-    trackName: string,
-    rating: number,
-    url: string,
-    popularity: string,
-    thumbnail: string,
-    duration: number,
-    color: string,
-    genre: GenreTrack,
-    albums: AlbumsTrack,
-    likedBy: LikedByTrack,
-
+  trackName: string;
+  rating: number;
+  url: string;
+  popularity: string;
+  thumbnail: string;
+  duration: number;
+  color: string;
+  genre: GenreTrack;
+  albums: AlbumsTrack;
+  likedBy: LikedByTrack;
 }
