@@ -18,6 +18,4 @@ userRouter
 	.put('/update/:id', updateUser)
 	.delete('/delete/:id', deleteUser);
 
-// userRouter.patch('/update', updateUser);
-
 export default userRouter;
