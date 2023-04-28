@@ -20,7 +20,7 @@ export const registerUser = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllUser = async (_req: Request, res: Response) => {
+export const getAllUsers = async (_req: Request, res: Response) => {
 	try {
 		const users = await UserModel.find({}).lean().exec();
 		res.status(200).send(users);
@@ -29,6 +29,16 @@ export const getAllUser = async (_req: Request, res: Response) => {
 	}
 };
 
+export const getUser = async (req: Request, res: Response) => {
+	const id = req.params.id;
+
+	try {
+		const user = await UserModel.findById(id).lean().exec();
+		res.status(200).send(user);
+	} catch (error) {
+		res.status(500).send({ message: (error as Error).message });
+	}
+};
 export const loginUser = async (req: Request, res: Response) => {
 	const { email } = req.body;
 

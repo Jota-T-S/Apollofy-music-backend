@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
 	dotenv.config({ path: '.env.development' });
 }
-
+console.log(process.env.MONGODB_URI);
 const ENV: string = process.env.NODE_ENV || 'development';
 
 const CONFIG: Config = {
