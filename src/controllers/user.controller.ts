@@ -2,23 +2,50 @@ import { Request, Response } from 'express';
 import UserModel from '../models/user.model';
 import { User } from '../interfaces/user';
 
+const jwt = require('jsonwebtoken');
+
+const createToken = (_id: string) => {
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '1d' });
+}
+
+
 export const registerUser = async (req: Request, res: Response) => {
   const { name, lastName, email, password, confirmPassword, birthday }: User =
     req.body;
   try {
-    const newUser = await UserModel.create({
-      name,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      birthday
-    });
-    res.status(200).send(newUser);
+
+    const user = await UserModel.signup(name, lastName!, email, password, confirmPassword, birthday!);
+
+    const token = createToken(user._id);
+
+    res.status(200).json({email, token});
+  } catch (error) {
+    res.status(400).send({ message: (error as Error).message });
+  }
+};
+
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  
+  try {
+    
+    const user = await UserModel.login(email, password)
+    
+    const token = createToken(user._id);
+    
+    if (user) {
+      res.status(200).send({ message: 'User exists!', id: user._id, token});
+    } else if (!user) {
+      res.status(404).send({ message: 'User not found' });
+    }
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
 };
+
+
+
+
 
 export const getAllUsers = async (_req: Request, res: Response) => {
   try {
@@ -39,21 +66,13 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(500).send({ message: (error as Error).message });
   }
 };
-export const loginUser = async (req: Request, res: Response) => {
-  const { email } = req.body;
 
-  try {
-    const user = await UserModel.findOne({ email }).lean().exec();
 
-    if (user) {
-      res.status(200).send({ message: 'User exists!', id: user._id });
-    } else if (!user) {
-      res.status(404).send({ message: 'User not found' });
-    }
-  } catch (error) {
-    res.status(500).send({ message: (error as Error).message });
-  }
-};
+
+
+
+
+
 
 export const updateUser = async (req: Request, res: Response) => {
   const id = req.params.id;

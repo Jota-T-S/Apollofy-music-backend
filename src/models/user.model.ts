@@ -1,6 +1,25 @@
-import { Schema, model } from 'mongoose';
+import { Model, Schema, model } from 'mongoose';
 
-const UserSchema = new Schema(
+const bcrypt = require('bcrypt');
+const validator = require('validator');
+
+
+interface IUser extends Document {
+  name: string;
+  _id: string; 
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  birthday: Date;
+}
+
+interface IUserModel extends Model<IUser> {
+  signup(name:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: Date): Promise<IUser>;
+  login(email: string, password: string): Promise<IUser>;
+}
+
+const UserSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -28,10 +47,59 @@ const UserSchema = new Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-const UserModel = model('User', UserSchema);
+UserSchema.statics.signup = async function (name:string, lastName: string, email: string, password: string, _confirmPassword: string, birthday: string ) {
+
+  //validation 
+  if (!email || !password) {
+    throw Error('All fields must be filled');
+  }
+
+  if (!validator.isEmail(email)) {
+    throw Error('Email is not valid');
+  } 
+  
+  if (!validator.isStrongPassword(password)) {
+    throw Error('Password is not strong enough');
+  }
+
+  const exists = await this.findOne({ email });
+
+  if(exists){
+    throw Error('Email already in use');
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
+
+  const user = await this.create({ email, password: hash, name, lastName, birthday });
+
+  return user
+}
+
+UserSchema.statics.login = async function (email: string, password: string ) {
+
+  if(!email || !password){
+    throw Error('All fields must be filled');
+  }
+
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw Error('Incorrect email');
+  }
+
+  const match = await bcrypt.compare(password, user.password);
+
+  if (!match) {
+    throw Error('Incorrect password');
+  }
+
+  return user;
+}
+
+const UserModel = model<IUser, IUserModel>('User', UserSchema);
 
 export default UserModel;
