@@ -10,8 +10,8 @@ import {
 const userRouter = Router();
 
 userRouter
-  .post('/', registerUser)
-  .get('/login', loginUser) // Always put routes without params first
+  .post('/register', registerUser)
+  .post('/login', loginUser) // Always put routes without params first
   .get('/:id', getUser)
   .put('/:id', updateUser)
   .delete('/:id', deleteUser);

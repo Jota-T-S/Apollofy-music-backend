@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 
 interface IUser { 
-  name: string;
   _id: string; 
+  firstName: string;
   lastName: string;
   email: string;
   password: string;
@@ -14,15 +14,15 @@ interface IUser {
 }
 
 interface IUserModel extends Model<IUser> {
-  signup(name:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: Date): IUser;
+  signup(firstName:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: Date): IUser;
   login(email: string, password: string): IUser;
 }
 
 const UserSchema = new Schema<IUser>(
   {
-    name: {
-      type: String,
-      required: [true, 'Please provide a username']
+    firstName: {
+      type: String, 
+      required: [true, 'First name is required']
     },
     lastName: {
       type: String,
@@ -36,9 +36,6 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: [true, "Password can't be blank"]
     },
-    confirmPassword: {
-      type: String
-    },
     birthday: {
       type: Date,
       default: null
@@ -49,7 +46,7 @@ const UserSchema = new Schema<IUser>(
   }
 );
 
-UserSchema.statics.signup = async function (name:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: string ) {
+UserSchema.statics.signup = async function (firstName:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: Date ) {
 
   //validation 
     if (!email || !password) {
@@ -77,7 +74,7 @@ UserSchema.statics.signup = async function (name:string, lastName: string, email
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
   
-    const user = await this.create({ email, password: hash, name, lastName, birthday });
+    const user = await this.create({ email, password: hash, firstName, lastName, birthday });
   
     return user
 }

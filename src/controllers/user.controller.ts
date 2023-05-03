@@ -10,17 +10,17 @@ const createToken = (_id: string) => {
 
 
 export const registerUser = async (req: Request, res: Response): Promise<void>  => {
-  const { name, lastName, email, password, confirmPassword, birthday }: User =
+  const { firstName, lastName, email, password, confirmPassword, birthday }: User =
     req.body;
   try {
 
-    const user = await UserModel.signup(name, lastName!, email, password, confirmPassword, birthday!);
+    const user = await UserModel.signup(firstName, lastName!, email, password, confirmPassword, birthday!);
 
     const token = createToken(user._id);
 
     res.status(200).json({email, token});
   } catch (error) {
-    res.status(400).send({ message: (error as Error).message });
+    res.status(400).json({ message: (error as Error).message });
   }
 };
 
