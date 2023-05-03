@@ -25,7 +25,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void>  
 };
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  const { email, password } : User = req.body;
   
   try {
     
@@ -45,16 +45,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 
 
-
-
-export const getAllUsers = async (_req: Request, res: Response) => {
-  try {
-    const users = await UserModel.find({}).lean().exec();
-    res.status(200).send(users);
-  } catch (error) {
-    res.status(500).send({ message: (error as Error).message });
-  }
-};
+// export const getAllUsers = async (_req: Request, res: Response) => {
+//   try {
+//     const users = await UserModel.find({}).lean().exec();
+//     res.status(200).send(users);
+//   } catch (error) {
+//     res.status(500).send({ message: (error as Error).message });
+//   }
+// };
 
 export const getUser = async (req: Request, res: Response) => {
   const id = req.params.id;

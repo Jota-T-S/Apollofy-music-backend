@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {
   registerUser,
-  getAllUsers,
   loginUser,
   updateUser,
   deleteUser,
@@ -12,9 +11,8 @@ const userRouter = Router();
 
 userRouter
   .post('/', registerUser)
-  .get('/', getAllUsers)
+  .get('/login', loginUser) // Always put routes without params first
   .get('/:id', getUser)
-  .get('/login', loginUser)
   .put('/:id', updateUser)
   .delete('/:id', deleteUser);
 
