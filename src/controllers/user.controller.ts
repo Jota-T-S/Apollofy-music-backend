@@ -14,7 +14,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void>  
     req.body;
   try {
 
-    const user = UserModel.signup(name, lastName!, email, password, confirmPassword, birthday!);
+    const user = await UserModel.signup(name, lastName!, email, password, confirmPassword, birthday!);
 
     const token = createToken(user._id);
 

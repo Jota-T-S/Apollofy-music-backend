@@ -80,7 +80,6 @@ UserSchema.statics.signup = async function (name:string, lastName: string, email
     const user = await this.create({ email, password: hash, name, lastName, birthday });
   
     return user
-
 }
 
 UserSchema.statics.login = async function (email: string, password: string ) {
