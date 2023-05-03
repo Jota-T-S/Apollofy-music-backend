@@ -9,12 +9,12 @@ const createToken = (_id: string) => {
 }
 
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response): Promise<void>  => {
   const { name, lastName, email, password, confirmPassword, birthday }: User =
     req.body;
   try {
 
-    const user = await UserModel.signup(name, lastName!, email, password, confirmPassword, birthday!);
+    const user = UserModel.signup(name, lastName!, email, password, confirmPassword, birthday!);
 
     const token = createToken(user._id);
 
@@ -24,7 +24,7 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   
   try {
@@ -66,13 +66,6 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(500).send({ message: (error as Error).message });
   }
 };
-
-
-
-
-
-
-
 
 export const updateUser = async (req: Request, res: Response) => {
   const id = req.params.id;

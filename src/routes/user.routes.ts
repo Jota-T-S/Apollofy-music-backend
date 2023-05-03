@@ -11,11 +11,11 @@ import {
 const userRouter = Router();
 
 userRouter
-  .post('/register', registerUser)
+  .post('/', registerUser)
   .get('/', getAllUsers)
   .get('/:id', getUser)
   .get('/login', loginUser)
-  .put('/update/:id', updateUser)
-  .delete('/delete/:id', deleteUser);
+  .put('/:id', updateUser)
+  .delete('/:id', deleteUser);
 
 export default userRouter;
