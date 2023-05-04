@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 
 export const createTrack = async (req: Request, res: Response) => {
   const {
-    trackName,
+    name,
     rating,
     url,
     popularity,
@@ -17,7 +17,7 @@ export const createTrack = async (req: Request, res: Response) => {
   }: Track = req.body;
   try {
     const newTrack = await TrackModel.create({
-      trackName,
+      name,
       rating,
       url,
       popularity,

@@ -2,17 +2,19 @@ import { Schema, model } from 'mongoose';
 
 const TrackSchema = new Schema(
   {
-    trackName: {
+    name: {
       type: String
     },
     rating: {
-      type: Number
+      type: Number,
+      default: 0
     },
     url: {
       type: String
     },
     popularity: {
-      type: String
+      type: Number,
+      default: 0
     },
     thumbnail: {
       type: String
@@ -21,17 +23,32 @@ const TrackSchema = new Schema(
       type: Number
     },
     color: {
-      type: String
+      type: String,
+      default: null
     },
     userId: {
-      type: String
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     },
     genre: {
-      id: { type: String },
-      name: { type: String }
+      type: String,
+      default: ''
     },
-    albums: [{ albumId: String }],
-    likedBy: [{ userId: String }]
+    albums: {
+      type: { id: String, name: String },
+      default: null
+    },
+    likedBy: {
+      type: [{ userId: String }],
+      default: null
+    },
+    releasedAt: {
+      type: Date
+    },
+    artists: {
+      type: [{ id: String, name: String }]
+    }
   },
   {
     timestamps: true
