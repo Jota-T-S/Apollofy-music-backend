@@ -18,6 +18,7 @@ interface Artist {
 }
 
 export interface Track {
+  trackId: string;
   name: string;
   rating?: number;
   url: string | null;

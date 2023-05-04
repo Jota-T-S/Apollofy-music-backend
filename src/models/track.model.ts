@@ -2,6 +2,9 @@ import { Schema, model } from 'mongoose';
 
 const TrackSchema = new Schema(
   {
+    trackId: {
+      type: String
+    },
     name: {
       type: String
     },
@@ -33,7 +36,7 @@ const TrackSchema = new Schema(
     },
     genre: {
       type: String,
-      default: ''
+      default: null
     },
     albums: {
       type: { id: String, name: String },
