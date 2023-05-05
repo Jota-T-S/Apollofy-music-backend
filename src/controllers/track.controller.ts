@@ -2,6 +2,15 @@ import TrackModel from '../models/track.model';
 import { Track } from '../interfaces/track';
 import { Request, Response } from 'express';
 
+export const getAllTrack = async (_req: Request, res: Response) => {
+  try {
+    const tracks = await TrackModel.find({});
+    res.status(200).send({ data: tracks });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
 export const createTrack = async (req: Request, res: Response) => {
   const {
     name,
