@@ -48,7 +48,7 @@ export const deleteAlbum = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
-  }
+  }  
 };
 
 export const updateAlbum = async (req: Request, res: Response) => {
