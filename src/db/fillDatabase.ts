@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Item } from '../interfaces/spotifyData';
+import { Songs } from '../interfaces/spotifyData';
 import { Track } from '../interfaces/track';
 import TrackModel from '../models/track.model';
 
@@ -8,13 +8,13 @@ const fillDatabase = async () => {
     'https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF/tracks?market=ES&fields=items%28track%28album%28id%2Cname%2Cimages%2Crelease_date%2Cgenres%29%2Cartists%28id%2Cname%29%2Cduration_ms%2Cexplicit%2Cid%2Cname%2Cpreview_url%29%29';
 
   try {
-    const response = await axios.get(url, {
+    const response = await axios.get<Songs>(url, {
       headers: {
         Authorization: `Bearer ${process.env.SPOTIFY_TOKEN}`
       }
     });
 
-    const tracks = response.data.items.map((item: Item) => {
+    const tracks = response.data.items.map((item) => {
       const track = {
         trackId: item.track.id,
         name: item.track.name,
