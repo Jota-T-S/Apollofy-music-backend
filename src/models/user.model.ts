@@ -3,8 +3,8 @@ import { Model, Schema, model } from 'mongoose';
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 
-interface IUser { 
-  _id: string; 
+interface IUser {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -14,14 +14,21 @@ interface IUser {
 }
 
 interface IUserModel extends Model<IUser> {
-  signup(firstName:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: Date): IUser;
+  signup(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+    birthday: Date
+  ): IUser;
   login(email: string, password: string): IUser;
 }
 
 const UserSchema = new Schema<IUser>(
   {
     firstName: {
-      type: String, 
+      type: String,
       required: [true, 'First name is required']
     },
     lastName: {
@@ -42,46 +49,57 @@ const UserSchema = new Schema<IUser>(
     }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
-UserSchema.statics.signup = async function (firstName:string, lastName: string, email: string, password: string, confirmPassword: string, birthday: Date ) {
+UserSchema.statics.signup = async function (
+  firstName: string,
+  lastName: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
+  birthday: Date
+) {
+  //validation
+  if (!email || !password) {
+    throw Error('All fields must be filled');
+  }
 
-  //validation 
-    if (!email || !password) {
-      throw Error('All fields must be filled');
-    }
+  if (password !== confirmPassword) {
+    throw Error('Passwords do not match');
+  }
 
-    if (password !== confirmPassword) {
-      throw Error('Passwords do not match');
-    }
-  
-    if (!validator.isEmail(email)) {
-      throw Error('Email is not valid');
-    } 
-    
-    if (!validator.isStrongPassword(password)) {
-      throw Error('Password is not strong enough');
-    }
+  if (!validator.isEmail(email)) {
+    throw Error('Email is not valid');
+  }
 
-    const exists = await this.findOne({ email });
-  
-    if(exists){
-      throw Error('Email already in use');
-    }
-  
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-  
-    const user = await this.create({ email, password: hash, firstName, lastName, birthday });
-  
-    return user
-}
+  if (!validator.isStrongPassword(password)) {
+    throw Error('Password is not strong enough');
+  }
 
-UserSchema.statics.login = async function (email: string, password: string ) {
+  const exists = await this.findOne({ email });
 
-  if(!email || !password){
+  if (exists) {
+    throw Error('Email already in use');
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
+
+  const user = await this.create({
+    email,
+    password: hash,
+    firstName,
+    lastName,
+    birthday
+  });
+
+  return user;
+};
+
+UserSchema.statics.login = async function (email: string, password: string) {
+  if (!email || !password) {
     throw Error('All fields must be filled');
   }
 
@@ -98,7 +116,7 @@ UserSchema.statics.login = async function (email: string, password: string ) {
   }
 
   return user;
-}
+};
 
 const UserModel = model<IUser, IUserModel>('User', UserSchema);
 
