@@ -5,11 +5,13 @@ import {
   getAllTrack,
   updateTrack
 } from '../controllers/track.controller';
+// import fileUpload from 'express-fileupload';
+
 const trackRouter = Router();
 
 trackRouter
   .get('/', getAllTrack)
-  .post('/', createTrack)
+  .post('/create', createTrack)
   .delete('/:id', deleteTrack)
   .put('/:id', updateTrack);
 

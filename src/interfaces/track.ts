@@ -21,9 +21,9 @@ export interface Track {
   trackId: string;
   name: string;
   rating?: number;
-  url: string | null;
+  url?: string | null;
   popularity?: string;
-  thumbnail: string;
+  thumbnail?: string;
   duration: number;
   color?: string;
   genre?: GenreTrack;

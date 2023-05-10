@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   dotenv.config({ path: '.env.development' });
 }
-console.log(process.env.MONGODB_URI);
+
 const ENV: string = process.env.NODE_ENV || 'development';
 
 const CONFIG: Config = {
@@ -16,6 +16,11 @@ const CONFIG: Config = {
     },
     db: {
       URI: process.env.MONGODB_URI
+    },
+    cloudinary: {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
     }
   },
   production: {
@@ -24,6 +29,11 @@ const CONFIG: Config = {
     },
     db: {
       URI: process.env.MONGODB_URI
+    },
+    cloudinary: {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
     }
   }
 };

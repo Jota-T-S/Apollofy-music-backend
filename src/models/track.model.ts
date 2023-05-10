@@ -13,14 +13,18 @@ const TrackSchema = new Schema(
       default: 0
     },
     url: {
-      type: String
+      // type: String
+      // public_id: String,
+      secure_url: String
     },
     popularity: {
       type: Number,
       default: 0
     },
     thumbnail: {
-      type: String
+      // type: String
+      // public_id: String,
+      secure_url: String
     },
     duration: {
       type: Number
