@@ -6,7 +6,8 @@ import {
   deleteUser,
   getUser,
   passwordReset,
-  updatePasswordReset
+  updatePasswordReset,
+  changePassword
 } from '../controllers/user.controller';
 
 const userRouter = Router();
@@ -17,6 +18,7 @@ userRouter
   .post('/password-reset', passwordReset)
   .patch('/update-password-reset', updatePasswordReset)
   .get('/:id', getUser)
+  .put('/change-password/:id', changePassword)
   .put('/:id', updateUser)
   .delete('/:id', deleteUser);
 

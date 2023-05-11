@@ -33,7 +33,7 @@ export const createAlbum = async (req: Request, res: Response) => {
     res.status(200).send(newAlbum);
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
-  }
+  }  
 };
 
 export const deleteAlbum = async (req: Request, res: Response) => {
@@ -67,3 +67,5 @@ export const updateAlbum = async (req: Request, res: Response) => {
     res.status(500).send({ message: (error as Error).message });
   }
 };
+
+// hello test
