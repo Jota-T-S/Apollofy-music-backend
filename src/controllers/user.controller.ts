@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/user.model';
 import { User } from '../interfaces/user';
+import { sendResetEmail } from '../utils/sendResetEmail';
 
 const jwt = require('jsonwebtoken');
 
@@ -43,6 +44,33 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const passwordReset = async (req: Request, res: Response): Promise<void> => {
+  const {email, url} = req.body;
+  console.log(email, url)
+  try {
+    const user = await UserModel.findOne({email})
+    if(user){
+      sendResetEmail(user._id, user.email, url, res);
+      // res.status(200).send({message: 'Email sent', email})
+    } else {
+      res.status(404).send({message: 'User not found'})
+    }
+  }catch(error){
+    console.log(error)
+  }
+}
+
+export const updatePasswordReset = async (req: Request, res: Response): Promise<void> => {
+  const {id, password} = req.body;
+  
+  try {
+    const user = await UserModel.findByIdAndUpdate(id, {password});
+    res.status(200).send({message: 'Password updated', user})
+  } catch(error){
+    console.log(error)
+  }
+  
+}
 
 
 // export const getAllUsers = async (_req: Request, res: Response) => {
