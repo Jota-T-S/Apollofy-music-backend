@@ -5,7 +5,6 @@ import {
   getAllTrack,
   updateTrack
 } from '../controllers/track.controller';
-// import fileUpload from 'express-fileupload';
 
 const trackRouter = Router();
 

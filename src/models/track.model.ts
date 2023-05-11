@@ -13,21 +13,21 @@ const TrackSchema = new Schema(
       default: 0
     },
     url: {
-      // type: String
+      type: String
       // public_id: String,
-      secure_url: String
+      // secure_url: String
     },
     popularity: {
       type: Number,
       default: 0
     },
     thumbnail: {
-      // type: String
+      type: String
       // public_id: String,
-      secure_url: String
+      // secure_url: String
     },
     duration: {
-      type: Number
+      type: String
     },
     color: {
       type: String,
@@ -43,7 +43,8 @@ const TrackSchema = new Schema(
       default: null
     },
     albums: {
-      type: { id: String, name: String },
+      type: Schema.Types.ObjectId,
+      ref: 'Album',
       default: null
     },
     likedBy: {

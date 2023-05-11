@@ -1,7 +1,7 @@
 import TrackModel from '../models/track.model';
-import { Track } from '../interfaces/track';
 import { Request, Response } from 'express';
-import { uploadImage, uploadTrack } from '../utils/cloudinary';
+import { Track } from '../interfaces/track';
+const { uploadImage, uploadTrack } = require('../utils/cloudinary');
 import fs from 'fs-extra';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
@@ -15,51 +15,27 @@ export const getAllTrack = async (_req: Request, res: Response) => {
 
 export const createTrack = async (req: Request, res: Response) => {
   const { url, thumbnail }: any = req.files;
-  const {
-    name,
-    rating,
-    popularity,
-    duration,
-    color,
-    genre,
-    albums,
-    likedBy
-  }: Track = req.body;
+  const { name, duration, genre }: Track = req.body;
+  console.log(req.body);
 
   try {
     if (!req.files?.thumbnail) {
       throw new Error('Thumbnail is required');
     }
     const resultImage = await uploadImage(thumbnail.tempFilePath);
-    const newTrackThumbnail = {
-      // public_id: resultImage.public_id,
-      secure_url: resultImage.secure_url
-    };
-
     await fs.unlink(thumbnail.tempFilePath);
-
     if (!req.files?.url) {
       throw new Error('Url is required');
     }
-
     const resultUrl = await uploadTrack(url.tempFilePath);
-    const newTrackUrl = {
-      // public_id: resultUrl.public_id,
-      secure_url: resultUrl.secure_url
-    };
-    await fs.unlink(url.tempFilePath);
 
+    await fs.unlink(url.tempFilePath);
     const newTrack = await TrackModel.create({
       name,
-      rating,
-      url: newTrackUrl,
-      popularity,
-      thumbnail: newTrackThumbnail,
+      url: resultUrl.secure_url,
+      thumbnail: resultImage.secure_url,
       duration,
-      color,
-      genre,
-      albums,
-      likedBy
+      genre
     });
 
     res.status(200).send(newTrack);

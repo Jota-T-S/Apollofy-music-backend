@@ -10,7 +10,12 @@ cloudinary.config({
 
 export const uploadImage = async (filePath: any) => {
   return await cloudinary.uploader.upload(filePath, {
-    folder: 'Apollofy'
+    resource_type: 'image',
+    folder: 'Apollofy',
+    height: 300,
+    width: 300,
+    crop: 'scale',
+    overwrite: true
   });
 };
 
