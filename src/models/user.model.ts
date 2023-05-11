@@ -1,4 +1,5 @@
 import { Model, Schema, model } from 'mongoose';
+import { Track } from '../interfaces/track';
 
 const bcrypt = require('bcrypt');
 const validator = require('validator');
@@ -10,7 +11,8 @@ interface IUser {
   email: string;
   password: string;
   confirmPassword: string;
-  birthday: Date;
+  birthday: String;
+  tracks: Track[];
 }
 
 interface IUserModel extends Model<IUser> {
@@ -44,9 +46,15 @@ const UserSchema = new Schema<IUser>(
       required: [true, "Password can't be blank"]
     },
     birthday: {
-      type: Date,
+      type: String,
       default: null
-    }
+    },
+    tracks: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Track'
+      }
+    ]
   },
   {
     timestamps: true
