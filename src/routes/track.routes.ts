@@ -3,14 +3,16 @@ import {
   createTrack,
   deleteTrack,
   getAllTrack,
-  updateTrack
+  updateTrack,
+  getTracksOfUser
 } from '../controllers/track.controller';
 
 const trackRouter = Router();
 
 trackRouter
   .get('/', getAllTrack)
-  .post('/create', createTrack)
+  .post('/create/:id', createTrack)
+  .get('/:id', getTracksOfUser)
   .delete('/:id', deleteTrack)
   .put('/:id', updateTrack);
 
