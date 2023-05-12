@@ -1,7 +1,8 @@
 import TrackModel from '../models/track.model';
+// import UserModel from '../models/user.model';
 import { Request, Response } from 'express';
 import { Track } from '../interfaces/track';
-const { uploadImage, uploadTrack } = require('../utils/cloudinary');
+import { uploadImage, uploadTrack } from '../utils/cloudinary';
 import fs from 'fs-extra';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
@@ -14,9 +15,9 @@ export const getAllTrack = async (_req: Request, res: Response) => {
 };
 
 export const createTrack = async (req: Request, res: Response) => {
+  const { id } = req.params;
   const { url, thumbnail }: any = req.files;
-  const { name, duration, genre }: Track = req.body;
-  console.log(req.body);
+  const { name, duration, genre, albums }: Track = req.body;
 
   try {
     if (!req.files?.thumbnail) {
@@ -35,7 +36,9 @@ export const createTrack = async (req: Request, res: Response) => {
       url: resultUrl.secure_url,
       thumbnail: resultImage.secure_url,
       duration,
-      genre
+      genre,
+      albums: albums.id,
+      userId: id
     });
 
     res.status(200).send(newTrack);
@@ -71,6 +74,20 @@ export const updateTrack = async (req: Request, res: Response) => {
       .join(', ');
 
     res.status(200).send({ message: `Track ${id} modified: ${updatedProps}` });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+export const getTracksOfUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    const tracks = await TrackModel.find({ userId: id });
+    res.status(200).send({ data: tracks });
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
