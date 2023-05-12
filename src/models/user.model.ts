@@ -1,8 +1,7 @@
 import { Model, Schema, model } from 'mongoose';
 import { Track } from '../interfaces/track';
-
-const bcrypt = require('bcrypt');
-const validator = require('validator');
+import validator from 'validator';
+import bcrypt from 'bcrypt';
 
 interface IUser {
   _id: string;

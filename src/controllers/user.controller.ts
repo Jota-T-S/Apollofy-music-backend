@@ -5,6 +5,7 @@ import { sendResetEmail } from '../utils/sendResetEmail';
 import jwt from 'jsonwebtoken';
 import { matchPassword } from '../utils/passwordManager';
 import bcrypt from 'bcrypt';
+import validator from 'validator';
 
 const createToken = (_id: string) => {
   return jwt.sign({ _id }, process.env.SECRET!, { expiresIn: '1d' });
@@ -57,12 +58,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 export const passwordReset = async (req: Request, res: Response): Promise<void> => {
   const {email, url} = req.body;
-  console.log(email, url)
   try {
     const user = await UserModel.findOne({email})
     if(user){
       sendResetEmail(user._id, user.email, url, res);
-      // res.status(200).send({message: 'Email sent', email})
+      res.status(200).send({message: 'Email sent', email})
     } else {
       res.status(404).send({message: 'User not found'})
     }
@@ -72,26 +72,30 @@ export const passwordReset = async (req: Request, res: Response): Promise<void> 
 }
 
 export const updatePasswordReset = async (req: Request, res: Response): Promise<void> => {
-  const {id, password} = req.body;
-  
+  const {id, password, repeatPassword} = req.body;
+
   try {
-    const user = await UserModel.findByIdAndUpdate(id, {password});
-    res.status(200).send({message: 'Password updated', user})
+    if (password !== repeatPassword) {
+      throw Error('Passwords do not match');
+    }
+    if (!validator.isStrongPassword(password)) {
+      throw Error('Password is not strong enough');
+    }
+  
+    const token = createToken(id);
+    
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    const user = await UserModel.findByIdAndUpdate(id, {password: hash});
+    
+    res.status(200).send({message: 'Password updated', user, token})
   } catch(error){
+    res.status(500).send({message: (error as Error).message})
     console.log(error)
   }
   
 }
-
-
-// export const getAllUsers = async (_req: Request, res: Response) => {
-//   try {
-//     const users = await UserModel.find({}).lean().exec();
-//     res.status(200).send(users);
-//   } catch (error) {
-//     res.status(500).send({ message: (error as Error).message });
-//   }
-// };
 
 export const getUser = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -160,11 +164,4 @@ export const changePassword = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(400).send(error);
   }
-
-  // try {
-  //   const user = await UserModel.findById(id).lean().exec();
-  //   res.status(200).send(user);
-  // } catch (error) {
-  //   res.status(500).send({ message: (error as Error).message });
-  // }
 };
