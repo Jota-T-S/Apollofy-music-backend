@@ -3,6 +3,10 @@ interface Tracks {
   order: number;
 }
 
+interface Followed {
+  userId: string;
+}
+
 export interface Playlist {
   name: string;
   collaborative: boolean;
@@ -16,5 +20,5 @@ export interface Playlist {
   rating: number;
   userId: string;
   tracks: Tracks[];
-  followedBy: [userId: string];
+  followedBy: Followed[];
 }
