@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { Track } from '../interfaces/track';
 import { uploadImage, uploadTrack } from '../utils/cloudinary';
 import fs from 'fs-extra';
+import PlaylistModel from '../models/playlist.model';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -108,6 +109,31 @@ export const getTracksOfUser = async (
   try {
     const tracks = await TrackModel.find({ userId: id });
     res.status(200).send({ data: tracks });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+export const getSearchResults = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { inputValue } = req.body;
+  try {
+    // find tracks
+    const tracks = await TrackModel.find({
+      name: { $regex: inputValue, $options: 'i' }
+    })
+      .lean()
+      .exec();
+    // find playlists
+    const playlists = await PlaylistModel.find({
+      name: { $regex: inputValue, $options: 'i' }
+    })
+      .lean()
+      .exec();
+
+    res.status(200).send({ tracks, playlists });
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
