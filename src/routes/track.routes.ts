@@ -13,7 +13,7 @@ trackRouter
   .get('/', getAllTrack)
   .post('/create/:id', createTrack)
   .get('/:id', getTracksOfUser)
-  .delete('/:id', deleteTrack)
+  .delete('/:trackId/:id', deleteTrack)
   .put('/:id', updateTrack);
 
 export default trackRouter;

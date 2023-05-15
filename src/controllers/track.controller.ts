@@ -1,5 +1,5 @@
 import TrackModel from '../models/track.model';
-// import UserModel from '../models/user.model';
+import UserModel from '../models/user.model';
 import { Request, Response } from 'express';
 import { Track } from '../interfaces/track';
 import { uploadImage, uploadTrack } from '../utils/cloudinary';
@@ -41,22 +41,42 @@ export const createTrack = async (req: Request, res: Response) => {
       userId: id
     });
 
+    await UserModel.findByIdAndUpdate(id, {
+      $push: { tracks: newTrack.id }
+    });
+
     res.status(200).send(newTrack);
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
 };
 
-export const deleteTrack = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const { trackName } = req.body;
+export const deleteTrack = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { trackId, id } = req.params;
+  console.log(req.params);
+
   try {
-    const track = await TrackModel.findByIdAndDelete(id).lean().exec();
+    const track: any = await TrackModel.findById(trackId).lean().exec();
+
+    if (track.userId.toString() !== id) {
+      return res
+        .status(403)
+        .send({ status: false, message: 'Unauthorized access' });
+    }
+
+    await TrackModel.findByIdAndDelete(trackId).exec();
+
+    await UserModel.findByIdAndUpdate(id, { $pull: { tracks: trackId } });
+
     res.status(200).send({
       status: true,
-      message: `${trackName} has been deleted`,
+      message: `${track.name} has been deleted`,
       data: track
     });
+    console.log(track);
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
   }
