@@ -1,10 +1,19 @@
+import { Request, Response } from 'express';
+import fs from 'fs-extra';
+import { uploadImage, uploadTrack } from '../utils/cloudinary';
+import { Track } from '../interfaces/track';
 import TrackModel from '../models/track.model';
 import UserModel from '../models/user.model';
-import { Request, Response } from 'express';
-import { Track } from '../interfaces/track';
-import { uploadImage, uploadTrack } from '../utils/cloudinary';
-import fs from 'fs-extra';
 import PlaylistModel from '../models/playlist.model';
+
+interface MyFile extends File {
+  tempFilePath: string;
+}
+
+interface Files {
+  url: MyFile;
+  thumbnail: MyFile;
+}
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -17,7 +26,7 @@ export const getAllTrack = async (_req: Request, res: Response) => {
 
 export const createTrack = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { url, thumbnail }: any = req.files;
+  const { url, thumbnail }: Files = req.files as unknown as Files;
   const { name, duration, genre, albums }: Track = req.body;
 
   try {
@@ -55,9 +64,8 @@ export const createTrack = async (req: Request, res: Response) => {
 export const deleteTrack = async (
   req: Request,
   res: Response
-): Promise<any> => {
+): Promise<void | Response> => {
   const { trackId, id } = req.params;
-  console.log(req.params);
 
   try {
     const track: any = await TrackModel.findById(trackId).lean().exec();
@@ -77,7 +85,6 @@ export const deleteTrack = async (
       message: `${track.name} has been deleted`,
       data: track
     });
-    console.log(track);
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
   }
