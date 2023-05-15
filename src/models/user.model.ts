@@ -3,7 +3,7 @@ import { Track } from '../interfaces/track';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 
-interface IUser {
+export interface IUser {
   _id: string;
   firstName: string;
   lastName: string;

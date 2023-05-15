@@ -1,11 +1,17 @@
 import { Router } from 'express';
 import {
   addPlaylist,
-  getAllPlaylist
+  addTRackToPlaylist,
+  getAllPlaylists,
+  getAllUserPlaylists
 } from '../controllers/playlist.controller';
 
 const playlistRouter = Router();
 
-playlistRouter.get('/', getAllPlaylist).post('/', addPlaylist);
+playlistRouter
+  .get('/', getAllPlaylists)
+  .post('/', addPlaylist)
+  .get('/:id', getAllUserPlaylists)
+  .patch('/:id', addTRackToPlaylist);
 
 export default playlistRouter;
