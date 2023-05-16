@@ -45,7 +45,7 @@ export const createTrack = async (req: Request, res: Response) => {
       thumbnail: resultImage.secure_url,
       duration,
       genre: genreTrack[0]._id,
-      albums: albums.id,
+      albums: albums!.id,
       userId: id
     });
 
