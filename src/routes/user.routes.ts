@@ -7,7 +7,10 @@ import {
   getUser,
   passwordReset,
   updatePasswordReset,
-  changePassword
+  changePassword,
+  likeSong,
+  dislikeSong,
+  getLikedSongs
 } from '../controllers/user.controller';
 
 const userRouter = Router();
@@ -17,6 +20,9 @@ userRouter
   .post('/login', loginUser) // Always put routes without params first
   .post('/password-reset', passwordReset)
   .patch('/update-password-reset', updatePasswordReset)
+  .post('/likes/:id', likeSong)
+  .post('/dislikes/:id', dislikeSong)
+  .get('/likes/:id', getLikedSongs)
   .get('/:id', getUser)
   .put('/change-password/:id', changePassword)
   .put('/:id', updateUser)

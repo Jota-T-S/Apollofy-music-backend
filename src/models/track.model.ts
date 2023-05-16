@@ -14,8 +14,6 @@ const TrackSchema = new Schema(
     },
     url: {
       type: String
-      // public_id: String,
-      // secure_url: String
     },
     popularity: {
       type: Number,
@@ -23,8 +21,6 @@ const TrackSchema = new Schema(
     },
     thumbnail: {
       type: String
-      // public_id: String,
-      // secure_url: String
     },
     duration: {
       type: String
