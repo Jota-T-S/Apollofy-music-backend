@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
+import { Playlist } from '../interfaces/playlist';
 
-const PlaylistSchema = new Schema(
+const PlaylistSchema = new Schema<Playlist>(
   {
     name: { type: String, required: [true, 'Playlist Name is required'] },
     collaborative: { type: Boolean, default: false },
@@ -18,11 +19,8 @@ const PlaylistSchema = new Schema(
     },
     tracks: [
       {
-        trackId: {
-          type: Schema.Types.ObjectId,
-          ref: 'Track'
-        },
-        order: Number
+        type: Schema.Types.ObjectId,
+        ref: 'Track'
       }
     ],
     followedBy: [
