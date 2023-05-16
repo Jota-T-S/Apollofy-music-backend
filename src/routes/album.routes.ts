@@ -3,13 +3,16 @@ import {
   getAlbum,
   createAlbum,
   deleteAlbum,
-  updateAlbum
+  updateAlbum,
+  getAllAlbums
 } from '../controllers/album.controller';
 const albumRouter = Router();
 
-albumRouter.get('/:id', getAlbum);
-albumRouter.post('/', createAlbum);
-albumRouter.delete('/:id', deleteAlbum);
-albumRouter.put('/:id', updateAlbum);
+albumRouter
+        .post('/', createAlbum)
+        .get('/', getAllAlbums)
+        .get('/:id', getAlbum)
+        .delete('/:id', deleteAlbum)
+        .put('/:id', updateAlbum)
 
 export default albumRouter;
