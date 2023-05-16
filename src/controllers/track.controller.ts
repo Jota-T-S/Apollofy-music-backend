@@ -5,15 +5,7 @@ import { Track } from '../interfaces/track';
 import TrackModel from '../models/track.model';
 import UserModel from '../models/user.model';
 import PlaylistModel from '../models/playlist.model';
-
-interface MyFile extends File {
-  tempFilePath: string;
-}
-
-interface Files {
-  url: MyFile;
-  thumbnail: MyFile;
-}
+import GenreModel from '../models/genre.model';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -26,8 +18,10 @@ export const getAllTrack = async (_req: Request, res: Response) => {
 
 export const createTrack = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { url, thumbnail }: Files = req.files as unknown as Files;
+  const { url, thumbnail }: any = req.files;
   const { name, duration, genre, albums }: Track = req.body;
+
+  console.log(req.body);
 
   try {
     if (!req.files?.thumbnail) {
@@ -41,12 +35,14 @@ export const createTrack = async (req: Request, res: Response) => {
     const resultUrl = await uploadTrack(url.tempFilePath);
 
     await fs.unlink(url.tempFilePath);
+    const genreTrack = await GenreModel.find({ name: genre });
+    console.log(genreTrack);
     const newTrack = await TrackModel.create({
       name,
       url: resultUrl.secure_url,
       thumbnail: resultImage.secure_url,
       duration,
-      genre,
+      genre: genreTrack[0]._id,
       albums: albums.id,
       userId: id
     });
@@ -64,7 +60,7 @@ export const createTrack = async (req: Request, res: Response) => {
 export const deleteTrack = async (
   req: Request,
   res: Response
-): Promise<void | Response> => {
+): Promise<any> => {
   const { trackId, id } = req.params;
 
   try {
