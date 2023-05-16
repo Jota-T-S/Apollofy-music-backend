@@ -12,6 +12,7 @@ export interface IUser {
   confirmPassword: string;
   birthday: String;
   tracks: Track[];
+  likedTracks: Track[];
 }
 
 interface IUserModel extends Model<IUser> {
@@ -49,6 +50,12 @@ const UserSchema = new Schema<IUser>(
       default: null
     },
     tracks: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Track'
+      }
+    ],
+    likedTracks: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Track'

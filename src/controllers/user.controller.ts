@@ -165,3 +165,48 @@ export const changePassword = async (req: Request, res: Response) => {
     res.status(400).send(error);
   }
 };
+
+// Like a song
+export const likeSong = async (req: Request, res: Response) => {
+
+  const id = req.params.id;
+  const songId = req.body.songId;
+
+  try {
+    const addSong = await UserModel.findByIdAndUpdate(id, {
+        $push: { likedTracks: songId }}
+      ).exec();
+    res.status(200).send({ message: 'Song liked successfully', addSong });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+}
+
+// Dislike a song
+export const dislikeSong = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const songId = req.body.songId;
+
+  try {
+    const addSong = await UserModel.findByIdAndUpdate(id, {
+        $pull: { likedTracks: songId }}
+      ).exec();
+    res.status(200).send({ message: 'Song disliked successfully', addSong });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+}
+
+// Get  all liked songs
+export const getLikedSongs = async (req: Request, res: Response) => {
+
+  const id = req.params.id;
+
+  try {
+    const likedSongs = await UserModel.findById(id).populate('likedTracks').lean().exec();
+    res.status(200).send( likedSongs?.likedTracks );
+  } catch (error) {
+    res.status(400).send(error);
+  }
+
+}
