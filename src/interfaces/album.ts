@@ -3,9 +3,12 @@ interface LikedByAlbum {
 }
 export interface Album {
   title: string;
-  year: number;
+  year: string;
   thumbnail: string;
+  artist_name: string;
   totalTracks: number;
-  userId: string;
-  likedBy: LikedByAlbum[];
+  url: string;
+  id: string;
+  userId?: string;
+  likedBy?: LikedByAlbum[];
 }
