@@ -18,7 +18,7 @@ export interface Playlist {
   numberSongs: number;
   followers: number;
   rating: number;
-  userId: string;
+  userId: string | undefined;
   tracks: Tracks[];
   followedBy: Followed[];
 }
