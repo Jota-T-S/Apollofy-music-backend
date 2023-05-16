@@ -8,6 +8,9 @@ const GenreSchema = new Schema({
   },
   color: {
     type: String
+  },
+  image: {
+    type: String
   }
 });
 

@@ -35,8 +35,10 @@ export const createTrack = async (req: Request, res: Response) => {
     const resultUrl = await uploadTrack(url.tempFilePath);
 
     await fs.unlink(url.tempFilePath);
+
     const genreTrack = await GenreModel.find({ name: genre });
     console.log(genreTrack);
+
     const newTrack = await TrackModel.create({
       name,
       url: resultUrl.secure_url,
