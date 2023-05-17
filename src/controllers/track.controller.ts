@@ -1,10 +1,12 @@
+import { Request, Response } from 'express';
+import fs from 'fs-extra';
+import { uploadImage, uploadTrack } from '../utils/cloudinary';
+import { Track } from '../interfaces/track';
 import TrackModel from '../models/track.model';
 import UserModel from '../models/user.model';
-import { Request, Response } from 'express';
-import { Track } from '../interfaces/track';
-import { uploadImage, uploadTrack } from '../utils/cloudinary';
-import fs from 'fs-extra';
 import PlaylistModel from '../models/playlist.model';
+import GenreModel from '../models/genre.model';
+import AlbumModel from '../models/album.model';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -20,6 +22,8 @@ export const createTrack = async (req: Request, res: Response) => {
   const { url, thumbnail }: any = req.files;
   const { name, duration, genre, albums }: Track = req.body;
 
+  console.log(req.body);
+
   try {
     if (!req.files?.thumbnail) {
       throw new Error('Thumbnail is required');
@@ -32,13 +36,17 @@ export const createTrack = async (req: Request, res: Response) => {
     const resultUrl = await uploadTrack(url.tempFilePath);
 
     await fs.unlink(url.tempFilePath);
+
+    const genreTrack = await GenreModel.find({ name: genre });
+    console.log(genreTrack);
+
     const newTrack = await TrackModel.create({
       name,
       url: resultUrl.secure_url,
       thumbnail: resultImage.secure_url,
       duration,
-      genre,
-      albums: albums.id,
+      genre: genreTrack[0]._id,
+      albums: albums!.id,
       userId: id
     });
 
@@ -57,7 +65,6 @@ export const deleteTrack = async (
   res: Response
 ): Promise<any> => {
   const { trackId, id } = req.params;
-  console.log(req.params);
 
   try {
     const track: any = await TrackModel.findById(trackId).lean().exec();
@@ -77,7 +84,6 @@ export const deleteTrack = async (
       message: `${track.name} has been deleted`,
       data: track
     });
-    console.log(track);
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
   }
@@ -133,7 +139,13 @@ export const getSearchResults = async (
       .lean()
       .exec();
 
-    res.status(200).send({ tracks, playlists });
+    // find albums
+    const albums = await AlbumModel.find({
+      title: { $regex: inputValue, $options: 'i' }
+    
+    })
+
+    res.status(200).send({ tracks, playlists, albums });
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }

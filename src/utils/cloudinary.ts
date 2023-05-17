@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import config from '../config/config';
+import { UploadApiResponse } from 'cloudinary';
 
 cloudinary.config({
   cloud_name: config.cloudinary.cloud_name,
@@ -8,7 +9,9 @@ cloudinary.config({
   secure: true
 });
 
-export const uploadImage = async (filePath: any) => {
+export const uploadImage = async (
+  filePath: string
+): Promise<UploadApiResponse> => {
   return await cloudinary.uploader.upload(filePath, {
     resource_type: 'image',
     folder: 'Apollofy',
@@ -19,7 +22,9 @@ export const uploadImage = async (filePath: any) => {
   });
 };
 
-export const uploadTrack = async (filePath: any) => {
+export const uploadTrack = async (
+  filePath: string
+): Promise<UploadApiResponse> => {
   return await cloudinary.uploader.upload(filePath, {
     resource_type: 'video',
     folder: 'Apollofy-Track'

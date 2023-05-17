@@ -7,7 +7,7 @@ const AlbumSchema = new Schema(
       required: [true, 'Please provide a title']
     },
     year: {
-      type: Number,
+      type: String,
       required: [true, 'Please provide a year']
     },
     thumbnail: {
@@ -16,10 +16,18 @@ const AlbumSchema = new Schema(
     totalTracks: {
       type: Number
     },
-    userId: {
-      type: String,
-      required: [true, 'Please provide a user ID']
+    url: {
+      type: String
     },
+    id: {
+      type: String,
+    },
+    tracks: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Track'
+      }
+    ],
     likedBy: [
       {
         userId: {
