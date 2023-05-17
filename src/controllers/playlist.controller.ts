@@ -92,3 +92,68 @@ export const addTRackToPlaylist = async (req: Request, res: Response) => {
     res.status(500).send({ message: (error as Error).message });
   }
 };
+
+export const deleteTrackFromPlaylist = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { songId } = req.body;
+
+  try {
+    if (!songId) throw new Error('No track id provided');
+
+    const playlist = await PlaylistModel.findByIdAndUpdate(id, {
+      $pull: { tracks: songId }
+    })
+      .lean()
+      .exec();
+
+    res.status(200).send({ data: playlist });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+export const deletePlaylist = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    if (!id) throw new Error('No playlist id provided');
+
+    const playlist = await PlaylistModel.findByIdAndDelete(id).lean().exec();
+
+    res.status(200).send({ data: `${playlist?.name} deleted` });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+export const editPlaylist = async (req: Request, res: Response) => {
+  const files: any = req.files;
+
+  const { id } = req.params;
+  console.log(id);
+
+  const { playlistName, playlistDescription } = req.body;
+
+  try {
+    if (files) {
+      const { secure_url } = await uploadImage(files!.thumbnail.tempFilePath);
+      await fs.unlink(files.thumbnail.tempFilePath);
+
+      const editPlaylist = await PlaylistModel.findByIdAndUpdate(id, {
+        name: playlistName,
+        description: playlistDescription,
+        thumbnail: secure_url
+      });
+
+      res.status(200).send(editPlaylist);
+    } else {
+      const editPlaylist = await PlaylistModel.findByIdAndUpdate(id, {
+        name: playlistName,
+        description: playlistDescription
+      });
+      res.status(200).send(editPlaylist);
+    }
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
