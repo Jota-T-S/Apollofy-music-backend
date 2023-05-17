@@ -18,6 +18,23 @@ export const getAlbum = async (req: Request, res: Response) => {
   }
 };
 
+// Get All Albums
+export const getAllAlbums = async (_req: Request, res: Response) => {
+  try {
+    const album = await AlbumModel.find({}).lean().exec();
+    console.log(album)
+
+    if (album) {
+      res.status(200).send({data: album});
+    } else if (!album) {
+      res.status(404).send({ message: `Albums not found` });
+    }
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+
 export const createAlbum = async (req: Request, res: Response) => {
   const { title, year, thumbnail, totalTracks, userId, likedBy }: Album =
     req.body;

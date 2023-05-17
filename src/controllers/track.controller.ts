@@ -6,6 +6,7 @@ import TrackModel from '../models/track.model';
 import UserModel from '../models/user.model';
 import PlaylistModel from '../models/playlist.model';
 import GenreModel from '../models/genre.model';
+import AlbumModel from '../models/album.model';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -138,7 +139,13 @@ export const getSearchResults = async (
       .lean()
       .exec();
 
-    res.status(200).send({ tracks, playlists });
+    // find albums
+    const albums = await AlbumModel.find({
+      title: { $regex: inputValue, $options: 'i' }
+    
+    })
+
+    res.status(200).send({ tracks, playlists, albums });
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
