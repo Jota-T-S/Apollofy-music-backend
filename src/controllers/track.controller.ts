@@ -92,3 +92,14 @@ export const getTracksOfUser = async (
     res.status(500).send({ message: (error as Error).message });
   }
 };
+
+export const getOneTrack = async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  try {
+    const track = await TrackModel.findById(id).lean().exec();
+    res.status(200).send(track);
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
