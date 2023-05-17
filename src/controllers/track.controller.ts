@@ -1,9 +1,12 @@
-import TrackModel from '../models/track.model';
-// import UserModel from '../models/user.model';
 import { Request, Response } from 'express';
-import { Track } from '../interfaces/track';
-import { uploadImage, uploadTrack } from '../utils/cloudinary';
 import fs from 'fs-extra';
+import { uploadImage, uploadTrack } from '../utils/cloudinary';
+import { Track } from '../interfaces/track';
+import TrackModel from '../models/track.model';
+import UserModel from '../models/user.model';
+import PlaylistModel from '../models/playlist.model';
+import GenreModel from '../models/genre.model';
+import AlbumModel from '../models/album.model';
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -19,6 +22,8 @@ export const createTrack = async (req: Request, res: Response) => {
   const { url, thumbnail }: any = req.files;
   const { name, duration, genre, albums }: Track = req.body;
 
+  console.log(req.body);
+
   try {
     if (!req.files?.thumbnail) {
       throw new Error('Thumbnail is required');
@@ -31,14 +36,22 @@ export const createTrack = async (req: Request, res: Response) => {
     const resultUrl = await uploadTrack(url.tempFilePath);
 
     await fs.unlink(url.tempFilePath);
+
+    const genreTrack = await GenreModel.find({ name: genre });
+    console.log(genreTrack);
+
     const newTrack = await TrackModel.create({
       name,
       url: resultUrl.secure_url,
       thumbnail: resultImage.secure_url,
       duration,
-      genre,
-      albums: albums.id,
+      genre: genreTrack[0]._id,
+      albums: albums!.id,
       userId: id
+    });
+
+    await UserModel.findByIdAndUpdate(id, {
+      $push: { tracks: newTrack.id }
     });
 
     res.status(200).send(newTrack);
@@ -47,14 +60,28 @@ export const createTrack = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTrack = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const { trackName } = req.body;
+export const deleteTrack = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { trackId, id } = req.params;
+
   try {
-    const track = await TrackModel.findByIdAndDelete(id).lean().exec();
+    const track: any = await TrackModel.findById(trackId).lean().exec();
+
+    if (track.userId.toString() !== id) {
+      return res
+        .status(403)
+        .send({ status: false, message: 'Unauthorized access' });
+    }
+
+    await TrackModel.findByIdAndDelete(trackId).exec();
+
+    await UserModel.findByIdAndUpdate(id, { $pull: { tracks: trackId } });
+
     res.status(200).send({
       status: true,
-      message: `${trackName} has been deleted`,
+      message: `${track.name} has been deleted`,
       data: track
     });
   } catch (error) {
@@ -88,6 +115,36 @@ export const getTracksOfUser = async (
   try {
     const tracks = await TrackModel.find({ userId: id });
     res.status(200).send({ data: tracks });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+export const getSearchResults = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { inputValue } = req.body;
+  try {
+    // find tracks
+    const tracks = await TrackModel.find({
+      name: { $regex: inputValue, $options: 'i' }
+    })
+      .lean()
+      .exec();
+    // find playlists
+    const playlists = await PlaylistModel.find({
+      name: { $regex: inputValue, $options: 'i' }
+    })
+      .lean()
+      .exec();
+
+    // find albums
+    const albums = await AlbumModel.find({
+      title: { $regex: inputValue, $options: 'i' }
+    });
+
+    res.status(200).send({ tracks, playlists, albums });
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
