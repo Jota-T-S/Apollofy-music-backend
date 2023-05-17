@@ -8,6 +8,7 @@ import albumRouter from './routes/album.routes';
 import playlistRouter from './routes/playlist.routes';
 import genreRouter from './routes/genre.routes';
 import fileUpload from 'express-fileupload';
+import rolRouter from './routes/rol.routes';
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use('/track', trackRouter);
 app.use('/album', albumRouter);
 app.use('/playlist', playlistRouter);
 app.use('/genre', genreRouter);
+app.use('/rol', rolRouter);
 
 export default app;

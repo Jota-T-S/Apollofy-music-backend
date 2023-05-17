@@ -69,7 +69,7 @@ export const addPlaylist = async (req: Request, res: Response) => {
 export const addTRackToPlaylist = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { trackId } = req.body;
-  console.log(trackId);
+  //console.log(trackId);
 
   try {
     if (!trackId) throw new Error('No track id provided');
@@ -130,7 +130,7 @@ export const editPlaylist = async (req: Request, res: Response) => {
   const files: any = req.files;
 
   const { id } = req.params;
-  console.log(id);
+  //console.log(id);
 
   const { playlistName, playlistDescription } = req.body;
 

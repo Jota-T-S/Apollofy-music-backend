@@ -1,7 +1,8 @@
-import { Model, Schema, model } from 'mongoose';
+import { Model, ObjectId, Schema, model } from 'mongoose';
 import { Track } from '../interfaces/track';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
+import { Rol } from '../interfaces/rol';
 
 export interface IUser {
   _id: string;
@@ -11,6 +12,7 @@ export interface IUser {
   password: string;
   confirmPassword: string;
   birthday: String;
+  rol: Rol;
   tracks: Track[];
   likedTracks: Track[];
 }
@@ -22,7 +24,8 @@ interface IUserModel extends Model<IUser> {
     email: string,
     password: string,
     confirmPassword: string,
-    birthday: Date
+    birthday: Date,
+    rol?: Rol
   ): IUser;
   login(email: string, password: string): IUser;
 }
@@ -49,6 +52,11 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: null
     },
+    rol: {
+      type: Schema.Types.ObjectId,
+      ref: 'Rol',
+      default: null
+    },
     tracks: [
       {
         type: Schema.Types.ObjectId,
@@ -73,7 +81,8 @@ UserSchema.statics.signup = async function (
   email: string,
   password: string,
   confirmPassword: string,
-  birthday: Date
+  birthday: Date,
+  rol: ObjectId
 ) {
   //validation
   if (!email || !password) {
@@ -106,7 +115,8 @@ UserSchema.statics.signup = async function (
     password: hash,
     firstName,
     lastName,
-    birthday
+    birthday,
+    rol
   });
 
   return user;

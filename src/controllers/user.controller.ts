@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { matchPassword } from '../utils/passwordManager';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
+import RolModel from '../models/rol.model';
 
 const createToken = (_id: string) => {
   return jwt.sign({ _id }, process.env.SECRET!, { expiresIn: '1d' });
@@ -18,16 +19,20 @@ export const registerUser = async (req: Request, res: Response) => {
     email,
     password,
     confirmPassword,
-    birthday
+    birthday,
+    rol
   }: User = req.body;
   try {
+    const rolUser = await RolModel.find({ name: rol });
+    console.log(rolUser);
     const user = await UserModel.signup(
       firstName,
       lastName!,
       email,
       password,
       confirmPassword,
-      birthday!
+      birthday!,
+      rol
     );
 
     const token = createToken(user._id);
@@ -56,23 +61,29 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const passwordReset = async (req: Request, res: Response): Promise<void> => {
-  const {email, url} = req.body;
+export const passwordReset = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { email, url } = req.body;
   try {
-    const user = await UserModel.findOne({email})
-    if(user){
+    const user = await UserModel.findOne({ email });
+    if (user) {
       sendResetEmail(user._id, user.email, url, res);
-      res.status(200).send({message: 'Email sent', email})
+      res.status(200).send({ message: 'Email sent', email });
     } else {
-      res.status(404).send({message: 'User not found'})
+      res.status(404).send({ message: 'User not found' });
     }
-  }catch(error){
-    console.log(error)
+  } catch (error) {
+    console.log(error);
   }
-}
+};
 
-export const updatePasswordReset = async (req: Request, res: Response): Promise<void> => {
-  const {id, password, repeatPassword} = req.body;
+export const updatePasswordReset = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id, password, repeatPassword } = req.body;
 
   try {
     if (password !== repeatPassword) {
@@ -81,21 +92,20 @@ export const updatePasswordReset = async (req: Request, res: Response): Promise<
     if (!validator.isStrongPassword(password)) {
       throw Error('Password is not strong enough');
     }
-  
+
     const token = createToken(id);
-    
+
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const user = await UserModel.findByIdAndUpdate(id, {password: hash});
-    
-    res.status(200).send({message: 'Password updated', user, token})
-  } catch(error){
-    res.status(500).send({message: (error as Error).message})
-    console.log(error)
+    const user = await UserModel.findByIdAndUpdate(id, { password: hash });
+
+    res.status(200).send({ message: 'Password updated', user, token });
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+    console.log(error);
   }
-  
-}
+};
 
 export const getUser = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -105,6 +115,16 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(200).send(user);
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
+  }
+};
+
+export const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const users = await UserModel.find().lean().exec();
+
+    res.status(200).send({ status: true, data: users });
+  } catch (error) {
+    res.status(500).send({ status: false, message: (error as Error).message });
   }
 };
 
@@ -168,19 +188,18 @@ export const changePassword = async (req: Request, res: Response) => {
 
 // Like a song
 export const likeSong = async (req: Request, res: Response) => {
-
   const id = req.params.id;
   const songId = req.body.songId;
 
   try {
     const addSong = await UserModel.findByIdAndUpdate(id, {
-        $push: { likedTracks: songId }}
-      ).exec();
+      $push: { likedTracks: songId }
+    }).exec();
     res.status(200).send({ message: 'Song liked successfully', addSong });
   } catch (error) {
     res.status(400).send(error);
   }
-}
+};
 
 // Dislike a song
 export const dislikeSong = async (req: Request, res: Response) => {
@@ -189,24 +208,25 @@ export const dislikeSong = async (req: Request, res: Response) => {
 
   try {
     const addSong = await UserModel.findByIdAndUpdate(id, {
-        $pull: { likedTracks: songId }}
-      ).exec();
+      $pull: { likedTracks: songId }
+    }).exec();
     res.status(200).send({ message: 'Song disliked successfully', addSong });
   } catch (error) {
     res.status(400).send(error);
   }
-}
+};
 
 // Get  all liked songs
 export const getLikedSongs = async (req: Request, res: Response) => {
-
   const id = req.params.id;
 
   try {
-    const likedSongs = await UserModel.findById(id).populate('likedTracks').lean().exec();
-    res.status(200).send( likedSongs?.likedTracks );
+    const likedSongs = await UserModel.findById(id)
+      .populate('likedTracks')
+      .lean()
+      .exec();
+    res.status(200).send(likedSongs?.likedTracks);
   } catch (error) {
     res.status(400).send(error);
   }
-
-}
+};

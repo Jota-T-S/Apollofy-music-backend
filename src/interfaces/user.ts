@@ -1,3 +1,5 @@
+import { Rol } from './rol';
+
 export interface User {
   firstName: string;
   lastName?: string;
@@ -5,4 +7,5 @@ export interface User {
   password: string;
   confirmPassword: string;
   birthday?: Date;
+  rol: Rol;
 }
