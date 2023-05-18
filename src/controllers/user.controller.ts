@@ -26,7 +26,8 @@ export const registerUser = async (req: Request, res: Response) => {
   }: User = req.body;
   try {
     const rolUser = await RolModel.find({ name: rol });
-    console.log(rolUser);
+    const realRol = rolUser[0]._id
+    console.log(realRol)
     const user = await UserModel.signup(
       firstName,
       lastName!,
@@ -34,12 +35,12 @@ export const registerUser = async (req: Request, res: Response) => {
       password,
       confirmPassword,
       birthday!,
-      rol
+      realRol
     );
 
     const token = createToken(user._id);
 
-    res.status(200).json({ email, token });
+    res.status(200).send({ email, token, id: user._id });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }

@@ -13,6 +13,81 @@ export const getAllPlaylists = async (_req: Request, res: Response) => {
   }
 };
 
+export const followPlaylist = async (req: Request, res: Response) => {
+  let { id } = req.params;
+  const mockUserId = '645cb4d1eef2182920eb6ca2'; // assuming req.user.id contains the ID of the current user
+  try {
+    const playlist = await PlaylistModel.findById(id);
+    if (!playlist) {
+      return res.status(404).json({ message: 'Playlist not found' });
+    }
+
+    const alreadyFollowed = playlist.followedBy.some(
+      (followObject) =>
+        followObject.userId && followObject.userId.toString() === mockUserId
+    );
+    if (alreadyFollowed) {
+      return res
+        .status(400)
+        .json({ message: 'You have already followed this playlist' });
+    }
+
+    playlist.followedBy.push({ userId: mockUserId });
+    await playlist.save();
+    return res.status(200).json({ message: 'Followed playlist' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const unfollowPlaylist = async (req: Request, res: Response) => {
+  let { id } = req.params;
+  const mockUserId = '645cb4d1eef2182920eb6ca2'; // assuming req.user.id contains the ID of the current user
+  try {
+    const playlist = await PlaylistModel.findById(id);
+    if (!playlist) {
+      return res.status(404).json({ message: 'Playlist not found' });
+    }
+
+    const alreadyFollowedIndex = playlist.followedBy.findIndex(
+      (followObject) =>
+        followObject.userId && followObject.userId.toString() === mockUserId
+    );
+    if (alreadyFollowedIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: 'You are not following this playlist' });
+    }
+
+    playlist.followedBy.splice(alreadyFollowedIndex, 1);
+    await playlist.save();
+    return res.status(200).json({ message: 'Unfollowed playlist' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const getFollowedPlaylists = async (req: Request, res: Response) => {
+  const { userId } = req.params; // assuming you are passing userId as a parameter
+  console.log(userId);
+  try {
+    const likedPlaylists = await PlaylistModel.find({
+      'likedBy.userId': userId
+    });
+    if (!likedPlaylists) {
+      return res
+        .status(404)
+        .json({ message: 'No liked songs found for this user' });
+    }
+    return res.status(200).json({ data: likedPlaylists });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 export const getOnePlaylist = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -44,7 +119,8 @@ export const getAllUserPlaylists = async (req: Request, res: Response) => {
 export const addPlaylist = async (req: Request, res: Response) => {
   const { thumbnail } = req.files as { thumbnail?: File };
 
-  const { playlistName, playlistDescription, userId } = req.body;
+  const { playlistName, playlistDescription, userId, publicAccessible } =
+    req.body;
 
   try {
     if (!thumbnail) {
@@ -58,6 +134,7 @@ export const addPlaylist = async (req: Request, res: Response) => {
       name: playlistName,
       description: playlistDescription,
       thumbnail: secure_url,
+      publicAccessible: publicAccessible === 'public' ? true : false,
       userId
     });
     res.status(200).send(newPlaylist);
@@ -130,9 +207,8 @@ export const editPlaylist = async (req: Request, res: Response) => {
   const files: any = req.files;
 
   const { id } = req.params;
-  //console.log(id);
 
-  const { playlistName, playlistDescription } = req.body;
+  const { playlistName, playlistDescription, publicAccessible } = req.body;
 
   try {
     if (files) {
@@ -142,14 +218,16 @@ export const editPlaylist = async (req: Request, res: Response) => {
       const editPlaylist = await PlaylistModel.findByIdAndUpdate(id, {
         name: playlistName,
         description: playlistDescription,
-        thumbnail: secure_url
+        thumbnail: secure_url,
+        publicAccessible: publicAccessible === 'public' ? true : false
       });
 
       res.status(200).send(editPlaylist);
     } else {
       const editPlaylist = await PlaylistModel.findByIdAndUpdate(id, {
         name: playlistName,
-        description: playlistDescription
+        description: playlistDescription,
+        publicAccessible: publicAccessible === 'public' ? true : false
       });
       res.status(200).send(editPlaylist);
     }

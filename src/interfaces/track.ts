@@ -25,7 +25,7 @@ export interface Track {
   id?: string;
   rating?: number;
   url?: string | null;
-  popularity?: string;
+  popularity?: number;
   thumbnail: string | undefined;
   duration: number;
   color?: string;
@@ -33,5 +33,6 @@ export interface Track {
   albums?: AlbumsTrack;
   likedBy?: LikedByTrack;
   releasedAt: Date | string | undefined;
-  artists: Artist[];
+  artists: Artist[]; 
+  playCount?: number;
 }
