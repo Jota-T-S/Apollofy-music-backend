@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
     const tracks = await TrackModel.find({}).lean().exec();
+    console.log(tracks)
     res.status(200).send({ status: true, data: tracks });
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
@@ -175,8 +176,11 @@ export const incrementPlayCount = async (req: Request, res: Response) => {
 
 export const getMostPlayed = async (_req: Request, res: Response) => {
   try {
-    const topTracks = await TrackModel.find().sort({ playCount: -1 }).limit(5);
+    const topTracks = await TrackModel.find()
+      .sort({ playCount: -1 }) 
+      .limit(30); 
 
+    
     const topTracksWithDuration = topTracks.map((track) => {
       const trackObject = track.toObject();
       return {
@@ -185,7 +189,7 @@ export const getMostPlayed = async (_req: Request, res: Response) => {
           (trackObject.playCount * trackObject.duration!) / 60000
       };
     });
-
+    console.log(topTracksWithDuration)
     return res.status(200).json(topTracksWithDuration);
   } catch (error) {
     console.error(error);
