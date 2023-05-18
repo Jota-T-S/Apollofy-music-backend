@@ -32,7 +32,6 @@ export const createTrack = async (req: Request, res: Response) => {
       throw new Error('Url is required');
     }
     const resultUrl = await uploadTrack(url.tempFilePath);
-
     await fs.unlink(url.tempFilePath);
 
     const genreTrack = await GenreModel.find({ name: genre });

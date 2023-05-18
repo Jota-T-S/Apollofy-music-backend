@@ -7,6 +7,8 @@ import { matchPassword } from '../utils/passwordManager';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import RolModel from '../models/rol.model';
+import { uploadImage } from '../utils/cloudinary';
+import fs from 'fs-extra';
 
 const createToken = (_id: string) => {
   return jwt.sign({ _id }, process.env.SECRET!, { expiresIn: '1d' });
@@ -125,6 +127,29 @@ export const getAllUsers = async (_req: Request, res: Response) => {
     res.status(200).send({ status: true, data: users });
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
+  }
+};
+
+export const uploadImageUser = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const { thumbnail }: any = req.files;
+
+  try {
+    if (!req.files?.thumbnail) {
+      throw new Error('Thumbnail is required');
+    }
+    const resultImage = await uploadImage(thumbnail.tempFilePath);
+    await fs.unlink(thumbnail.tempFilePath);
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      id,
+      { thumbnail: resultImage.secure_url },
+      { new: true }
+    );
+
+    res.status(200).send(updatedUser);
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
   }
 };
 

@@ -11,6 +11,7 @@ export interface IUser {
   email: string;
   password: string;
   confirmPassword: string;
+  thumbnail?: string;
   birthday: String;
   rol: Rol;
   tracks: Track[];
@@ -48,6 +49,11 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: [true, "Password can't be blank"]
     },
+    thumbnail: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/dvsab2hi0/image/upload/v1684417680/icons-genre/user-icon_rjahcw.png'
+    },
     birthday: {
       type: String,
       default: null
@@ -81,6 +87,7 @@ UserSchema.statics.signup = async function (
   email: string,
   password: string,
   confirmPassword: string,
+  thumbnail: string,
   birthday: Date,
   rol: ObjectId
 ) {
@@ -114,6 +121,7 @@ UserSchema.statics.signup = async function (
     email,
     password: hash,
     firstName,
+    thumbnail,
     lastName,
     birthday,
     rol
