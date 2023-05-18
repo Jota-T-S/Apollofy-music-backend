@@ -22,10 +22,10 @@ export const getAlbum = async (req: Request, res: Response) => {
 export const getAllAlbums = async (_req: Request, res: Response) => {
   try {
     const album = await AlbumModel.find({}).lean().exec();
-    console.log(album)
+    //console.log(album)
 
     if (album) {
-      res.status(200).send({data: album});
+      res.status(200).send({ data: album });
     } else if (!album) {
       res.status(404).send({ message: `Albums not found` });
     }
@@ -33,7 +33,6 @@ export const getAllAlbums = async (_req: Request, res: Response) => {
     res.status(500).send({ message: (error as Error).message });
   }
 };
-
 
 export const createAlbum = async (req: Request, res: Response) => {
   const { title, year, thumbnail, totalTracks, userId, likedBy }: Album =
@@ -50,7 +49,7 @@ export const createAlbum = async (req: Request, res: Response) => {
     res.status(200).send(newAlbum);
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
-  }  
+  }
 };
 
 export const deleteAlbum = async (req: Request, res: Response) => {
@@ -65,7 +64,7 @@ export const deleteAlbum = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
-  }  
+  }
 };
 
 export const updateAlbum = async (req: Request, res: Response) => {

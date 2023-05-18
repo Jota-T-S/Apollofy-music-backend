@@ -24,8 +24,6 @@ export const createTrack = async (req: Request, res: Response) => {
   const { url, thumbnail }: any = req.files;
   const { name, duration, genre, albums }: Track = req.body;
 
-  console.log(req.body);
-
   try {
     if (!req.files?.thumbnail) {
       throw new Error('Thumbnail is required');
@@ -40,7 +38,6 @@ export const createTrack = async (req: Request, res: Response) => {
     await fs.unlink(url.tempFilePath);
 
     const genreTrack = await GenreModel.find({ name: genre });
-    console.log(genreTrack);
 
     const newTrack = await TrackModel.create({
       name,
@@ -144,8 +141,7 @@ export const getSearchResults = async (
     // find albums
     const albums = await AlbumModel.find({
       title: { $regex: inputValue, $options: 'i' }
-    
-    })
+    });
 
     res.status(200).send({ tracks, playlists, albums });
   } catch (error) {

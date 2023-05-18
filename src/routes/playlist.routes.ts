@@ -3,6 +3,9 @@ import {
  addPlaylist,
  followPlaylist,
  addTRackToPlaylist,
+  deletePlaylist,
+  deleteTrackFromPlaylist,
+  editPlaylist,
  getAllPlaylists,
  unfollowPlaylist,
  getFollowedPlaylists,
@@ -22,7 +25,10 @@ playlistRouter
  .get('/all/:id', getAllUserPlaylists)
  .get('/getFollowedPlaylists/:id', getFollowedPlaylists)
  .post('/', addPlaylist)
- .patch('/:id', addTRackToPlaylist);
+ .patch('/track/:id', addTRackToPlaylist)
+ .patch('/:id', editPlaylist)
+ .delete('/:id', deletePlaylist)
+ .delete('/track/:id', deleteTrackFromPlaylist);
 
 
 export default playlistRouter;

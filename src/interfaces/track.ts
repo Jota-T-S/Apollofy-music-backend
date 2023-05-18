@@ -1,8 +1,8 @@
 interface GenreTrack {
   id: string;
   name: string;
-  color: string;
-  image: string;
+  color?: string;
+  image?: string;
 }
 
 interface AlbumsTrack {
