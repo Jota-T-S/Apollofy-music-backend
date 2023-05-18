@@ -44,7 +44,8 @@ export const getAllUserPlaylists = async (req: Request, res: Response) => {
 export const addPlaylist = async (req: Request, res: Response) => {
   const { thumbnail } = req.files as { thumbnail?: File };
 
-  const { playlistName, playlistDescription, userId } = req.body;
+  const { playlistName, playlistDescription, userId, publicAccessible } =
+    req.body;
 
   try {
     if (!thumbnail) {
@@ -58,6 +59,7 @@ export const addPlaylist = async (req: Request, res: Response) => {
       name: playlistName,
       description: playlistDescription,
       thumbnail: secure_url,
+      publicAccessible: publicAccessible === 'public' ? true : false,
       userId
     });
     res.status(200).send(newPlaylist);
@@ -130,9 +132,8 @@ export const editPlaylist = async (req: Request, res: Response) => {
   const files: any = req.files;
 
   const { id } = req.params;
-  console.log(id);
 
-  const { playlistName, playlistDescription } = req.body;
+  const { playlistName, playlistDescription, publicAccessible } = req.body;
 
   try {
     if (files) {
@@ -142,14 +143,16 @@ export const editPlaylist = async (req: Request, res: Response) => {
       const editPlaylist = await PlaylistModel.findByIdAndUpdate(id, {
         name: playlistName,
         description: playlistDescription,
-        thumbnail: secure_url
+        thumbnail: secure_url,
+        publicAccessible: publicAccessible === 'public' ? true : false
       });
 
       res.status(200).send(editPlaylist);
     } else {
       const editPlaylist = await PlaylistModel.findByIdAndUpdate(id, {
         name: playlistName,
-        description: playlistDescription
+        description: playlistDescription,
+        publicAccessible: publicAccessible === 'public' ? true : false
       });
       res.status(200).send(editPlaylist);
     }
