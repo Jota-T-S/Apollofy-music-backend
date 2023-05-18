@@ -10,12 +10,14 @@ import {
   changePassword,
   likeSong,
   dislikeSong,
-  getLikedSongs
+  getLikedSongs,
+  getAllUsers
 } from '../controllers/user.controller';
 
 const userRouter = Router();
 
 userRouter
+  .get('/', getAllUsers)
   .post('/register', registerUser)
   .post('/login', loginUser) // Always put routes without params first
   .post('/password-reset', passwordReset)

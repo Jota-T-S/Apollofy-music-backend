@@ -23,7 +23,7 @@ const TrackSchema = new Schema(
       type: String
     },
     duration: {
-      type: String
+      type: Number 
     },
     color: {
       type: String,
@@ -53,6 +53,10 @@ const TrackSchema = new Schema(
     },
     artists: {
       type: [{ id: String, name: String }]
+    },
+    playCount: {
+      type: Number,
+      default: 0
     }
   },
   {
