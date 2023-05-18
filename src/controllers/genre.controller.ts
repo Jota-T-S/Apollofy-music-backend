@@ -21,3 +21,60 @@ export const getTracksByGenre = async (req: Request, res: Response) => {
     res.status(500).send({ status: false, message: (error as Error).message });
   }
 };
+
+export const getGenreStats = async (_req: Request, res: Response) => {
+  try {
+    const genreStats = await TrackModel.aggregate([
+      {
+        $group: {
+          _id: "$genre",
+          totalPlays: {
+            $sum: {
+              $cond: [
+                { $in: [{ $type: "$playCount" }, ["int", "long", "double"]] },
+                "$playCount",
+                0
+              ]
+            }
+          },
+          totalDuration: {
+            $sum: {
+              $cond: [
+                { $in: [{ $type: "$duration" }, ["int", "long", "double"]] },
+                { $multiply: ["$duration", { $ifNull: ["$playCount", 0] }] },
+                0
+              ]
+            }
+          }
+        }
+      },
+      
+      
+      {
+        $lookup: {
+          from: "genres", 
+          localField: "_id",
+          foreignField: "_id",
+          as: "genreDetails"
+        }
+      },
+      {
+        $unwind: "$genreDetails"
+      },
+      {
+        $project: {
+          _id: 0, 
+          genre: "$genreDetails.name",
+          totalPlays: 1, 
+          totalDuration: { $divide: ["$totalDuration", 60000] } // converting duration from ms to minutes
+        }
+      }
+    ]);
+
+    return res.status(200).json(genreStats);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+

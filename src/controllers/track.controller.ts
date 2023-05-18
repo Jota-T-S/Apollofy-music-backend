@@ -7,6 +7,8 @@ import UserModel from '../models/user.model';
 import PlaylistModel from '../models/playlist.model';
 import GenreModel from '../models/genre.model';
 import AlbumModel from '../models/album.model';
+import mongoose from 'mongoose';
+
 
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
@@ -22,8 +24,6 @@ export const createTrack = async (req: Request, res: Response) => {
   const { url, thumbnail }: any = req.files;
   const { name, duration, genre, albums }: Track = req.body;
 
-  console.log(req.body);
-
   try {
     if (!req.files?.thumbnail) {
       throw new Error('Thumbnail is required');
@@ -38,7 +38,6 @@ export const createTrack = async (req: Request, res: Response) => {
     await fs.unlink(url.tempFilePath);
 
     const genreTrack = await GenreModel.find({ name: genre });
-    console.log(genreTrack);
 
     const newTrack = await TrackModel.create({
       name,
@@ -142,11 +141,63 @@ export const getSearchResults = async (
     // find albums
     const albums = await AlbumModel.find({
       title: { $regex: inputValue, $options: 'i' }
-    
-    })
+    });
 
     res.status(200).send({ tracks, playlists, albums });
   } catch (error) {
     res.status(500).send({ message: (error as Error).message });
   }
 };
+
+
+export const incrementPlayCount = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id as any)) {
+      return res.status(400).json({ message: 'Invalid track ID' });
+    }
+
+    const track = await TrackModel.findByIdAndUpdate(
+      id,
+      { $inc: { playCount: 1 } },
+      { new: true, runValidators: true }
+    );
+
+    if (!track) {
+      return res.status(404).json({ message: 'Track not found' });
+    }
+
+    console.log(track);
+    return res.status(200).json({ message: 'Incremented play count' });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+export const getMostPlayed = async (_req: Request, res: Response) => {
+  try {
+    const topTracks = await TrackModel.find()
+      .sort({ playCount: -1 }) 
+      .limit(5); 
+
+    
+    const topTracksWithDuration = topTracks.map((track) => {
+      const trackObject = track.toObject();
+      return {
+        ...trackObject, 
+        totalMinutesPlayed: (trackObject.playCount * trackObject.duration!) / 60000, 
+      };
+    });
+
+    return res.status(200).json(topTracksWithDuration);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
