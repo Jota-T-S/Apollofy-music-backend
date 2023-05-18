@@ -1,4 +1,4 @@
-import { Model, ObjectId, Schema, model } from 'mongoose';
+import mongoose, { Model, Schema, model } from 'mongoose';
 import { Track } from '../interfaces/track';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
@@ -25,7 +25,7 @@ interface IUserModel extends Model<IUser> {
     password: string,
     confirmPassword: string,
     birthday: Date,
-    rol?: Rol
+    rol?: mongoose.Types.ObjectId
   ): IUser;
   login(email: string, password: string): IUser;
 }
@@ -82,7 +82,7 @@ UserSchema.statics.signup = async function (
   password: string,
   confirmPassword: string,
   birthday: Date,
-  rol: ObjectId
+  rol: string
 ) {
   //validation
   if (!email || !password) {

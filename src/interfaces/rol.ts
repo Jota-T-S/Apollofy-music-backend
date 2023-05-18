@@ -1,3 +1,3 @@
-export interface Rol {
-  name: string;
+export interface Rol{
+  name?: string;
 }
