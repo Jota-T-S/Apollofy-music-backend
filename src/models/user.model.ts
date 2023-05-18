@@ -1,4 +1,4 @@
-import { Model, ObjectId, Schema, model } from 'mongoose';
+import mongoose, { Model, Schema, model } from 'mongoose';
 import { Track } from '../interfaces/track';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
@@ -11,6 +11,7 @@ export interface IUser {
   email: string;
   password: string;
   confirmPassword: string;
+  thumbnail?: string;
   birthday: String;
   rol: Rol;
   tracks: Track[];
@@ -25,7 +26,7 @@ interface IUserModel extends Model<IUser> {
     password: string,
     confirmPassword: string,
     birthday: Date,
-    rol?: Rol
+    rol?: mongoose.Types.ObjectId
   ): IUser;
   login(email: string, password: string): IUser;
 }
@@ -47,6 +48,11 @@ const UserSchema = new Schema<IUser>(
     password: {
       type: String,
       required: [true, "Password can't be blank"]
+    },
+    thumbnail: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/dvsab2hi0/image/upload/v1684417680/icons-genre/user-icon_rjahcw.png'
     },
     birthday: {
       type: String,
@@ -81,8 +87,9 @@ UserSchema.statics.signup = async function (
   email: string,
   password: string,
   confirmPassword: string,
+  thumbnail: string,
   birthday: Date,
-  rol: ObjectId
+  rol: string
 ) {
   //validation
   if (!email || !password) {
@@ -114,6 +121,7 @@ UserSchema.statics.signup = async function (
     email,
     password: hash,
     firstName,
+    thumbnail,
     lastName,
     birthday,
     rol

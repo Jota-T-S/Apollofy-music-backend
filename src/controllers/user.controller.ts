@@ -7,6 +7,8 @@ import { matchPassword } from '../utils/passwordManager';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import RolModel from '../models/rol.model';
+import { uploadImage } from '../utils/cloudinary';
+import fs from 'fs-extra';
 
 const createToken = (_id: string) => {
   return jwt.sign({ _id }, process.env.SECRET!, { expiresIn: '1d' });
@@ -24,7 +26,8 @@ export const registerUser = async (req: Request, res: Response) => {
   }: User = req.body;
   try {
     const rolUser = await RolModel.find({ name: rol });
-    console.log(rolUser);
+    const realRol = rolUser[0]._id
+    console.log(realRol)
     const user = await UserModel.signup(
       firstName,
       lastName!,
@@ -32,12 +35,12 @@ export const registerUser = async (req: Request, res: Response) => {
       password,
       confirmPassword,
       birthday!,
-      rol
+      realRol
     );
 
     const token = createToken(user._id);
 
-    res.status(200).json({ email, token });
+    res.status(200).send({ email, token, id: user._id });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
@@ -125,6 +128,29 @@ export const getAllUsers = async (_req: Request, res: Response) => {
     res.status(200).send({ status: true, data: users });
   } catch (error) {
     res.status(500).send({ status: false, message: (error as Error).message });
+  }
+};
+
+export const uploadImageUser = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const { thumbnail }: any = req.files;
+
+  try {
+    if (!req.files?.thumbnail) {
+      throw new Error('Thumbnail is required');
+    }
+    const resultImage = await uploadImage(thumbnail.tempFilePath);
+    await fs.unlink(thumbnail.tempFilePath);
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      id,
+      { thumbnail: resultImage.secure_url },
+      { new: true }
+    );
+
+    res.status(200).send(updatedUser);
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
   }
 };
 

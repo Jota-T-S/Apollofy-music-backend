@@ -9,7 +9,6 @@ import GenreModel from '../models/genre.model';
 import AlbumModel from '../models/album.model';
 import mongoose from 'mongoose';
 
-
 export const getAllTrack = async (_req: Request, res: Response) => {
   try {
     const tracks = await TrackModel.find({}).lean().exec();
@@ -35,7 +34,6 @@ export const createTrack = async (req: Request, res: Response) => {
       throw new Error('Url is required');
     }
     const resultUrl = await uploadTrack(url.tempFilePath);
-
     await fs.unlink(url.tempFilePath);
 
     const genreTrack = await GenreModel.find({ name: genre });
@@ -150,7 +148,6 @@ export const getSearchResults = async (
   }
 };
 
-
 export const incrementPlayCount = async (req: Request, res: Response) => {
   const { id } = req.params;
   console.log(id);
@@ -171,13 +168,11 @@ export const incrementPlayCount = async (req: Request, res: Response) => {
 
     console.log(track);
     return res.status(200).json({ message: 'Incremented play count' });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 export const getMostPlayed = async (_req: Request, res: Response) => {
   try {
@@ -189,8 +184,9 @@ export const getMostPlayed = async (_req: Request, res: Response) => {
     const topTracksWithDuration = topTracks.map((track) => {
       const trackObject = track.toObject();
       return {
-        ...trackObject, 
-        totalMinutesPlayed: (trackObject.playCount * trackObject.duration!) / 60000, 
+        ...trackObject,
+        totalMinutesPlayed:
+          (trackObject.playCount * trackObject.duration!) / 60000
       };
     });
     console.log(topTracksWithDuration)
@@ -201,4 +197,13 @@ export const getMostPlayed = async (_req: Request, res: Response) => {
   }
 };
 
+export const getOneTrack = async (req: Request, res: Response) => {
+  const id = req.params.id;
 
+  try {
+    const track = await TrackModel.findById(id).lean().exec();
+    res.status(200).send(track);
+  } catch (error) {
+    res.status(500).send({ message: (error as Error).message });
+  }
+};
