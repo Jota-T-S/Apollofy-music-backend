@@ -181,15 +181,15 @@ export const incrementPlayCount = async (req: Request, res: Response) => {
 export const getMostPlayed = async (_req: Request, res: Response) => {
   try {
     const topTracks = await TrackModel.find()
-      .sort({ playCount: -1 }) // sort in descending order of playCount
-      .limit(5); // limit to top 10
+      .sort({ playCount: -1 }) 
+      .limit(5); 
 
-    // calculate total minutes played for each track
+    
     const topTracksWithDuration = topTracks.map((track) => {
       const trackObject = track.toObject();
       return {
-        ...trackObject, // spread the track document data
-        totalMinutesPlayed: (trackObject.playCount * trackObject.duration!) / 60000, // convert ms to minutes
+        ...trackObject, 
+        totalMinutesPlayed: (trackObject.playCount * trackObject.duration!) / 60000, 
       };
     });
 
