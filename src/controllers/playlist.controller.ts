@@ -71,7 +71,7 @@ export const unfollowPlaylist = async (req: Request, res: Response) => {
 
 export const getFollowedPlaylists = async (req: Request, res: Response) => {
   const { userId } = req.params; // assuming you are passing userId as a parameter
-  console.log(userId);
+
   try {
     const likedPlaylists = await PlaylistModel.find({
       'likedBy.userId': userId
@@ -146,7 +146,6 @@ export const addPlaylist = async (req: Request, res: Response) => {
 export const addTRackToPlaylist = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { trackId } = req.body;
-  //console.log(trackId);
 
   try {
     if (!trackId) throw new Error('No track id provided');
@@ -162,7 +161,6 @@ export const addTRackToPlaylist = async (req: Request, res: Response) => {
     // if (!playlists) throw new Error('No playlists');
     // playlists.tracks.push(trackId);
     // await playlists.save();
-    // console.log(numElements);
 
     res.status(200).send({ data: playlists });
   } catch (error) {

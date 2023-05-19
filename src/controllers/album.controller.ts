@@ -3,14 +3,17 @@ import { Album } from '../interfaces/album';
 import { Request, Response } from 'express';
 
 export const getAlbumTracks = async (req: Request, res: Response) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
   try {
-    const album = await AlbumModel.find({id: id}).lean().exec();
-    const data = await AlbumModel.findById(album[0]._id).populate('tracks').lean().exec();
+    const album = await AlbumModel.find({ id: id }).lean().exec();
+    const data = await AlbumModel.findById(album[0]._id)
+      .populate('tracks')
+      .lean()
+      .exec();
 
     if (data) {
-      res.status(200).send({data});
+      res.status(200).send({ data });
     } else if (!data) {
       res.status(404).send({ message: `Album with ID ${id} not found` });
     }
@@ -23,7 +26,6 @@ export const getAlbumTracks = async (req: Request, res: Response) => {
 export const getAllAlbums = async (_req: Request, res: Response) => {
   try {
     const album = await AlbumModel.find({}).lean().exec();
-    //console.log(album)
 
     if (album) {
       res.status(200).send({ data: album });

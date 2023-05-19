@@ -1,16 +1,14 @@
 import axios from 'axios';
-import { AlbumTrack, AlbumsTracks} from '../interfaces/spotifyData';
+import { AlbumTrack, AlbumsTracks } from '../interfaces/spotifyData';
 // import { Albums } from '../interfaces/spotifyData';
 // import { Album } from '../interfaces/album';
 // import { Album } from '../interfaces/album';
-
 
 import { Track } from '../interfaces/track';
 import TrackModel from '../models/track.model';
 import AlbumModel from '../models/album.model';
 
 const fillDatabase = async () => {
-
   // ! Songs URL
   // const url =
   //   'https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF/tracks?market=ES&fields=items%28track%28album%28id%2Cname%2Cimages%2Crelease_date%2Cgenres%29%2Cartists%28id%2Cname%29%2Cduration_ms%2Cexplicit%2Cid%2Cname%2Cpreview_url%29%29';
@@ -19,13 +17,12 @@ const fillDatabase = async () => {
   // const url = 'https://api.spotify.com/v1/albums?ids=2n0ez0hSIrItwkVxDKXHlO,7wGLeeJt18EBjc181FP2cM,7ceAracLVCjB7bhicRoPGb,7qemUq4n71awwVPOaX7jw4,7hhxms8KCwlQCWffIJpN9b,33pt9HBdGlAbRGBHQgsZsU,3cQO7jp5S9qLBoIVtbkSM1,6twKQ0EsUJHVlAr6XBylrj,0R3iUk31drnPKGCdb35Cbw'
 
   // ! Album Songs URL
-  const albumId = '33pt9HBdGlAbRGBHQgsZsU'
-  const url = `https://api.spotify.com/v1/albums/${albumId}/tracks`
+  const albumId = '33pt9HBdGlAbRGBHQgsZsU';
+  const url = `https://api.spotify.com/v1/albums/${albumId}/tracks`;
 
   try {
-
     // ! Add Album songs to DB
-     const response = await axios.get<AlbumsTracks>(url, {
+    const response = await axios.get<AlbumsTracks>(url, {
       headers: {
         Authorization: `Bearer ${process.env.SPOTIFY_TOKEN}`
       }
@@ -37,7 +34,7 @@ const fillDatabase = async () => {
     // const title = album?.title;
     const year = album?.year;
 
-    response.data.items.map((item:AlbumTrack) => {
+    response.data.items.map((item: AlbumTrack) => {
       const track = {
         trackId: item.id,
         name: item.name,
@@ -49,7 +46,6 @@ const fillDatabase = async () => {
       };
 
       if (track.url) {
-        // console.log(track, albumId)
         addIntoDB(track, albumId);
         return;
       }
@@ -78,9 +74,8 @@ const fillDatabase = async () => {
     //     addIntoDB(track);
     //     return;
     //   }
-    //   console.log('url no exits');
     // });
-     
+
     // ! Add albums to DB
     // const response = await axios.get<Albums>(url, {
     //   headers: {
@@ -101,7 +96,6 @@ const fillDatabase = async () => {
 
     //   addAlbumsIntoDB(album);
     // })
-
   } catch (error) {
     console.log(error);
   }
@@ -127,7 +121,7 @@ const fillDatabase = async () => {
 // }
 
 // ! Add songs to DB Function w/ Album reference
-const addIntoDB = async (data: Track, albumId : string) => {
+const addIntoDB = async (data: Track, albumId: string) => {
   try {
     const song = await TrackModel.findOne({ trackId: data.trackId });
 
@@ -136,10 +130,10 @@ const addIntoDB = async (data: Track, albumId : string) => {
     }
 
     const track = await TrackModel.create(data);
-    await AlbumModel.findOneAndUpdate({id: albumId}, 
-      {$push : {tracks : track._id}
-    })
-    console.log('track created');
+    await AlbumModel.findOneAndUpdate(
+      { id: albumId },
+      { $push: { tracks: track._id } }
+    );
   } catch (error) {
     console.log(error);
   }

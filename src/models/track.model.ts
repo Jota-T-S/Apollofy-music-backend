@@ -23,7 +23,7 @@ const TrackSchema = new Schema(
       type: String
     },
     duration: {
-      type: Number 
+      type: String
     },
     color: {
       type: String,
