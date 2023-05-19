@@ -48,8 +48,6 @@ export const getGenreStats = async (_req: Request, res: Response) => {
           }
         }
       },
-      
-      
       {
         $lookup: {
           from: "genres", 
@@ -66,8 +64,11 @@ export const getGenreStats = async (_req: Request, res: Response) => {
           _id: 0, 
           genre: "$genreDetails.name",
           totalPlays: 1, 
-          totalDuration: { $divide: ["$totalDuration", 60000] } // converting duration from ms to minutes
+          totalDuration: { $divide: ["$totalDuration", 60000] } 
         }
+      },
+      {
+        $sort: { totalDuration: -1 } 
       }
     ]);
 
