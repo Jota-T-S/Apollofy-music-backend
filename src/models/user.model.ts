@@ -87,7 +87,6 @@ UserSchema.statics.signup = async function (
   email: string,
   password: string,
   confirmPassword: string,
-  thumbnail: string,
   birthday: Date,
   rol: string
 ) {
@@ -121,7 +120,6 @@ UserSchema.statics.signup = async function (
     email,
     password: hash,
     firstName,
-    thumbnail,
     lastName,
     birthday,
     rol

@@ -6,6 +6,7 @@ export interface User {
   email: string;
   password: string;
   confirmPassword: string;
+  thumbnail: string;
   birthday?: Date;
   rol: Rol;
 }

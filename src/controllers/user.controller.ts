@@ -26,8 +26,7 @@ export const registerUser = async (req: Request, res: Response) => {
   }: User = req.body;
   try {
     const rolUser = await RolModel.find({ name: rol });
-    const realRol = rolUser[0]._id
-    console.log(realRol)
+    const realRol = rolUser[0]._id;
     const user = await UserModel.signup(
       firstName,
       lastName!,
@@ -40,7 +39,13 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const token = createToken(user._id);
 
-    res.status(200).send({ email, token, id: user._id });
+    res.status(200).send({
+      email,
+      token,
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName
+    });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
@@ -55,7 +60,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const token = createToken(user._id);
 
     if (user) {
-      res.status(200).send({ message: 'User exists!', id: user._id, token });
+      res.status(200).send({
+        message: 'User exists!',
+        id: user._id,
+        token,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      });
     } else if (!user) {
       res.status(404).send({ message: 'User not found' });
     }

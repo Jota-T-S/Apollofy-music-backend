@@ -1,14 +1,13 @@
 import mongoose from 'mongoose';
 import TrackModel from '../models/track.model';
+import config from '../config/config';
 
 async function updateTracks() {
   try {
-    await mongoose.connect('mongodb+srv://Luis:fWxu7L2KCOMXlGdt@apollofyapp.7qyokod.mongodb.net/test'); // Update this with your actual MongoDB connection string
+    await mongoose.connect(config.db.URI!); // Update this with your actual MongoDB connection string
 
-    console.log('Updating tracks...');
     await TrackModel.updateMany({}, { $set: { playCount: 0 } });
-
-    console.log('Update complete!');
+    console.log('funcion ejecutada');
   } catch (error) {
     console.error('Failed to update tracks:', error);
   } finally {
