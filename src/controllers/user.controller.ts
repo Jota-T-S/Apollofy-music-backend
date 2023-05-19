@@ -56,7 +56,8 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
   try {
     const user = await UserModel.login(email, password);
-
+    const rol = await UserModel.find({ email }).populate('rol');
+    console.log(rol[0].rol.name);
     const token = createToken(user._id);
 
     if (user) {
@@ -66,7 +67,8 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         token,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email
+        email: user.email,
+        rol: rol[0].rol.name
       });
     } else if (!user) {
       res.status(404).send({ message: 'User not found' });
